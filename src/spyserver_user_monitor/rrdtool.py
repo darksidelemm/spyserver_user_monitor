@@ -18,7 +18,7 @@ def setup_rrd(filename, config):
     _args = [filename,
     "--start", "now",
     "--step", "120",
-    "RRA:MAX:0.5:1:32140800"]
+    "RRA:MAX:0.5:1:315360"]
 
     # Ensure db is created with metrics in a known order.
     _spyserver_list = list(config['spyservers'])
@@ -51,12 +51,23 @@ def update_rrd(filename, config):
     rrdtool.update(filename, _cmd)
 
 
+def generate_graphs(filename, config, output_dir="./"):
+    period = 'h'
+    ret = rrdtool.graph( "test.png", "--start", "-1%s" %(period), "--vertical-label=Users",
+         "-w 800",
+         "DEF:m1_num=spyservers.rrd:20m_band:MAX",
+         "DEF:m2_num=spyservers.rrd:40m_band:MAX",
+         "LINE1:m1_num#0000FF:20m_band\r",
+         "LINE2:m2_num#00FF00:40m_band\r")
 
 
 def main():
     parser = argparse.ArgumentParser(description="SpySever User Monitor")
     parser.add_argument(
         "config", type=str, help="Configuration File (e.g. config.yml)"
+    )
+    parser.add_argument(
+        "--graph", action='store_true', default=False, help="Generate graphs."
     )
     parser.add_argument(
         "--log-level", type=str, choices=["debug", "info", "error"], default="info"
@@ -89,6 +100,9 @@ def main():
 
 
     update_rrd(rrdfile, config)
+
+    if args.graph:
+        generate_graphs(rrdfile, config)
 
 
 

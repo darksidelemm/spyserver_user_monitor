@@ -51,23 +51,48 @@ def update_rrd(filename, config):
     rrdtool.update(filename, _cmd)
 
 
-def generate_graphs(filename, config, output_dir="./"):
-    period = 'h'
-    ret = rrdtool.graph( "test.png", "--start", "-1%s" %(period), "--vertical-label=Users",
-         "-w 800",
-         "DEF:m1_num=spyservers.rrd:20m_band:MAX",
-         "DEF:m2_num=spyservers.rrd:40m_band:MAX",
-         "LINE1:m1_num#0000FF:20m_band\r",
-         "LINE2:m2_num#00FF00:40m_band\r")
+def generate_graphs(filename, config, output_dir="./", periods=['h','d','w']):
+    """ Output graphs for all spyservers dataseries. """
+    # Get ordered list of servers.
+    _spyserver_ports = list(config['spyservers'])
+    _spyserver_ports.sort()
+
+    for _port in _spyserver_ports:
+        _ds_name = config['spyservers'][_port]
+
+        for _period in periods:
+            _outfile = f'{_ds_name}-1{_period}.png'
+
+            if _period == 'h':
+                _title = "%s Spyserver Usage - 1 Hour" % _ds_name.split('_')[0]
+            elif _period == 'd':
+                _title = "%s Spyserver Usage - 1 Day" % _ds_name.split('_')[0]
+            elif _period == 'w':
+                _title = "%s Spyserver Usage - 1 Week" % _ds_name.split('_')[0]
+            else:
+                _title = "%s Spyserver Usage" % _ds_name.split('_')[0]
+
+            ret = rrdtool.graph( os.path.join(output_dir,_outfile),
+                "--start", "-1%s" % (_period), 
+                "--vertical-label=Users",
+                "-w 800",
+                "-g",
+                "-t %s" % _title,
+                "DEF:m1_num=%s:%s:MAX" % (filename, _ds_name),
+                "LINE1:m1_num#0000FF:%s\r" % _ds_name)
+            logging.debug(f"Wrote file: {_outfile}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="SpySever User Monitor")
+    parser = argparse.ArgumentParser(description="SpySever RRDTool Utility")
     parser.add_argument(
         "config", type=str, help="Configuration File (e.g. config.yml)"
     )
     parser.add_argument(
         "--graph", action='store_true', default=False, help="Generate graphs."
+    )
+    parser.add_argument(
+        "--update", action='store_true', default=False, help="Update RRDtool DB with latest data."
     )
     parser.add_argument(
         "--log-level", type=str, choices=["debug", "info", "error"], default="info"
@@ -98,8 +123,8 @@ def main():
         logging.exception("Error loading RRD DB", exc_info=exc)
         sys.exit(1)
 
-
-    update_rrd(rrdfile, config)
+    if args.update:
+        update_rrd(rrdfile, config)
 
     if args.graph:
         generate_graphs(rrdfile, config)

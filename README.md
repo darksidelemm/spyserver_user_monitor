@@ -42,5 +42,12 @@ Spyserver Port 5040 (40m_band): 0 users
 
 ### Create and update a rrdtool db:
 ```
-$ python -m spyserver_user_monitor.rrdtool config.yml
+$ python -m spyserver_user_monitor.rrdtool --update config.yml
 ```
+
+### Generate Usage Graphs for each Spyserver
+```
+$ python -m spyserver_user_monitor.rrdtool --graphs config.yml
+```
+
+Graphs are output to the current working directory by default.

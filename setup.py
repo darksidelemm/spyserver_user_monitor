@@ -56,9 +56,10 @@ if __name__ == "__main__":
             "Programming Language :: Python :: Implementation :: CPython",
         ],
         keywords=["spyserver", "network", "monitor"],
-        # entry_points = {
-        #     'console_scripts': [
-        #         'spyserver-monitor = spyserver_user_monitor.monitor:main',
-        #     ]
-        # },
+        entry_points = {
+            'console_scripts': [
+                'spyserver-monitor = spyserver_user_monitor.monitor:main',
+                'spyserver-rrdtool = spyserver_user_monitor.rrdtool:main',
+            ]
+        },
     )

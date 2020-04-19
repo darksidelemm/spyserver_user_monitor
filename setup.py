@@ -38,9 +38,7 @@ if __name__ == "__main__":
         author="Mark Jessop",
         python_requires=">=3.6",
         install_requires=[
-            "flask",
-            "flask_socketio"
-
+            "ruamel.yaml"
         ],
         dependency_links=[
         ],

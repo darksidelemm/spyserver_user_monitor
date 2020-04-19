@@ -1,0 +1,9 @@
+# Spyserver Monitor Config
+
+# RRDTool Database filename.
+rrdtool_db: "spyservers.rrd"
+
+# SpyServer Ports and names:
+spyservers:
+  5020: "20m_band"
+  5040: "40m_band"

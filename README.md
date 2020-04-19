@@ -47,7 +47,8 @@ $ python -m spyserver_user_monitor.rrdtool --update config.yml
 
 ### Generate Usage Graphs for each Spyserver
 ```
-$ python -m spyserver_user_monitor.rrdtool --graphs config.yml
+$ python -m spyserver_user_monitor.rrdtool --graph config.yml
 ```
 
-Graphs are output to the current working directory by default.
+Graphs are output to the current working directory.
+
